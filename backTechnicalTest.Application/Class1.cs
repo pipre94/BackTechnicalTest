@@ -1,6 +1,7 @@
-﻿namespace backTechnicalTest.Application;
-
-public class Class1
+﻿namespace BackTechnicalTest.Application
 {
+    public class Class1
+    {
 
+    }
 }
