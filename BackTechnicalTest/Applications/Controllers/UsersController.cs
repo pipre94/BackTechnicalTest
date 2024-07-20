@@ -1,5 +1,11 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using BackTechnicalTest.Applications.Commands;
+using BackTechnicalTest.Domain.Entities;
+using BackTechnicalTest.Domain.Models;
+using BackTechnicalTest.Infrastructure.Repository;
+using MediatR;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BackTechnicalTest.Applications.Controllers
 {
@@ -8,33 +14,72 @@ namespace BackTechnicalTest.Applications.Controllers
     public class UsersController
     {
         private readonly ILogger<UsersController> _logger;
+        //private readonly IMediator _mediator;
+        private readonly UserRepository _userRepository;
 
-        public UsersController(ILogger<UsersController> logger)
+
+        public UsersController(ILogger<UsersController> logger, UserRepository userRepository)
         {
             _logger = logger;
+            _userRepository = userRepository;
+            //_mediator = mediator;   
         }
 
-        [HttpPost]
-        public ActionResult<bool> CreateUser()
+        [HttpPost("CreateUsers")]
+        public async Task<ActionResult<Users>> CreateUsers(Users createUsers)
         {
+            //var createUsers = await _mediator.Send(command);
 
-            return true;
+            if (createUsers == null)
+            {
+                _logger.LogInformation("If the information of the model for users is null, return empty.");
+                return null;
+            }
+
+            await _userRepository.AddUsers(createUsers);
+
+            return createUsers;
         }
 
-        [HttpGet("{id}")]
-        public ActionResult<bool> GetUserById(int id)
+        [HttpGet("GetUserByName/{name}")]
+        public async Task<ActionResult<Users>> GetUserByNameAsync(string name)
         {
-               
-                return true;
+            Users users = new Users();
+            if (string.IsNullOrEmpty(name))
+            {
+                _logger.LogInformation("If the information of the model for users is null, return empty.");
+                return null;
+            }
+
+            users = await _userRepository.GetUsersByIdOrName(name);
+            return users;
             
         }
 
-        [HttpGet]
-        public ActionResult<bool> GetUser(int id)
+        [HttpGet("GetAllUsers")]
+        public async Task<ActionResult<List<Users>>> GetAllUserAsync()
         {
+            List<Users> users = new List<Users>();
 
-            return true;
+            users = await _userRepository.GetAllUsers();
 
+            return users;
+
+        }
+
+        [HttpPost("Login")]
+        public async Task<ActionResult<List<Persons>>> Login(LoginModel loginModel)
+        {
+            List<Persons> persons = new List<Persons>();
+
+            if (loginModel == null)
+            {
+                return null;
+            }
+
+            persons = await _userRepository.LoginAuthenticateUserAsync(loginModel);
+
+            return persons;
         }
     }
 }

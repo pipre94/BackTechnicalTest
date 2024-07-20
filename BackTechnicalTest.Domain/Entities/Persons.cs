@@ -1,4 +1,6 @@
-﻿namespace BackTechnicalTest.Domain.Entities
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace BackTechnicalTest.Domain.Entities
 {
     public class Persons
     {
@@ -9,7 +11,7 @@
         public string Email { get; set; }
         public string IdentificationType { get; set; }
         public DateTime CreationDate { get; set; }
-        public string FullIdentification { get; set; }
-        public string FullName { get; set; }
+        public string? FullIdentification { get; set; }
+        public string? FullName { get; set; }
     }
 }
